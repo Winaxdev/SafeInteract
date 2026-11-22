@@ -4,8 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.safeinteract.SafeInteractClient;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.resources.Identifier;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;

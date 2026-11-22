@@ -1,10 +1,10 @@
 package com.safeinteract.handler;
 
 import com.safeinteract.util.Feedback;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ServerInfo;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 public final class ServerPolicy {
     public static final String NO_HOLD = "§s§i§q§h";
@@ -23,33 +23,33 @@ public final class ServerPolicy {
         pierceBlocked = false;
     }
 
-    public static void onJoin(MinecraftClient client) {
+    public static void onJoin(Minecraft client) {
         reset();
-        ServerInfo server = client.getCurrentServerEntry();
-        if (server != null && server.label != null) apply(client, server.label.getString());
+        ServerData server = client.getCurrentServer();
+        if (server != null && server.motd != null) apply(client, server.motd.getString());
     }
 
-    public static boolean onGameMessage(MinecraftClient client, Text message) {
+    public static boolean onGameMessage(Minecraft client, Component message) {
         String text = message.getString();
         boolean hasToken = text.contains(NO_HOLD) || text.contains(NO_PIERCE);
         apply(client, text);
         return hasToken && text.replace(NO_HOLD, "").replace(NO_PIERCE, "").isBlank();
     }
 
-    private static void apply(MinecraftClient client, String text) {
+    private static void apply(Minecraft client, String text) {
         boolean newHold = text.contains(NO_HOLD) && !holdBlocked;
         boolean newPierce = text.contains(NO_PIERCE) && !pierceBlocked;
         holdBlocked |= newHold;
         pierceBlocked |= newPierce;
         if (newHold || newPierce) {
             if (client.player != null) {
-                MutableText list = Text.empty();
-                if (holdBlocked) list.append(Text.translatable("feature.safeinteract.smart_hold"));
+                MutableComponent list = Component.empty();
+                if (holdBlocked) list.append(Component.translatable("feature.safeinteract.smart_hold"));
                 if (pierceBlocked) {
                     if (holdBlocked) list.append(", ");
-                    list.append(Text.translatable("feature.safeinteract.entity_pierce"));
+                    list.append(Component.translatable("feature.safeinteract.entity_pierce"));
                 }
-                client.player.sendMessage(Feedback.prefix().append(Text.translatable("message.safeinteract.server_policy", list)), false);
+                client.showDebugChat(Feedback.prefix().append(Component.translatable("message.safeinteract.server_policy", list)));
             }
             if (newHold) AutoHoldHandler.stopByServer(client);
         }

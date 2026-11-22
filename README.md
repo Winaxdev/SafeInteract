@@ -55,14 +55,14 @@ Restrictions last until disconnect. Build Guard and durability protection cannot
 
 ## Requirements
 
-- Minecraft 1.21.11
-- Fabric Loader 0.18.1 or newer
+- Minecraft 26.3
+- Fabric Loader 0.19.5 or newer
 - Fabric API
 - Optional: Mod Menu and Cloth Config
 
 ## Building
 
-Use JDK 21 and run:
+Use JDK 25 and run:
 
 ```sh
 ./gradlew build
@@ -131,14 +131,14 @@ SafeInteract помогает избежать случайных взаимод
 
 ### Требования
 
-- Minecraft 1.21.11
-- Fabric Loader 0.18.1 или новее
+- Minecraft 26.3
+- Fabric Loader 0.19.5 или новее
 - Fabric API
 - Необязательно: Mod Menu и Cloth Config
 
 ### Сборка
 
-Используйте JDK 21 и выполните:
+Используйте JDK 25 и выполните:
 
 ```sh
 ./gradlew build

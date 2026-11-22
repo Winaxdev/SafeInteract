@@ -1,31 +1,74 @@
 package com.safeinteract.handler;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.safeinteract.SafeInteractClient;
 import com.safeinteract.config.ModConfig;
 import com.safeinteract.util.Feedback;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.block.*;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.entity.decoration.ItemFrameEntity;
-import net.minecraft.entity.decoration.painting.PaintingEntity;
-import net.minecraft.entity.passive.MerchantEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.AbstractBoatEntity;
-import net.minecraft.entity.vehicle.AbstractMinecartEntity;
-import net.minecraft.item.*;
-import net.minecraft.registry.Registries;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Util;
-import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.world.entity.decoration.painting.Painting;
+import net.minecraft.world.entity.npc.villager.AbstractVillager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.BrushItem;
+import net.minecraft.world.item.FlintAndSteelItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.MaceItem;
+import net.minecraft.world.item.ShearsItem;
+import net.minecraft.world.item.TridentItem;
+import net.minecraft.world.level.block.AbstractBannerBlock;
+import net.minecraft.world.level.block.AbstractSkullBlock;
+import net.minecraft.world.level.block.AnvilBlock;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.BeaconBlock;
+import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.level.block.BellBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BrushableBlock;
+import net.minecraft.world.level.block.ButtonBlock;
+import net.minecraft.world.level.block.CartographyTableBlock;
+import net.minecraft.world.level.block.ChiseledBookShelfBlock;
+import net.minecraft.world.level.block.ComposterBlock;
+import net.minecraft.world.level.block.ConduitBlock;
+import net.minecraft.world.level.block.CraftingTableBlock;
+import net.minecraft.world.level.block.CreakingHeartBlock;
+import net.minecraft.world.level.block.DecoratedPotBlock;
+import net.minecraft.world.level.block.DiodeBlock;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.EnchantingTableBlock;
+import net.minecraft.world.level.block.EndGatewayBlock;
+import net.minecraft.world.level.block.EndPortalBlock;
+import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.GrindstoneBlock;
+import net.minecraft.world.level.block.LecternBlock;
+import net.minecraft.world.level.block.LeverBlock;
+import net.minecraft.world.level.block.LoomBlock;
+import net.minecraft.world.level.block.NoteBlock;
+import net.minecraft.world.level.block.RespawnAnchorBlock;
+import net.minecraft.world.level.block.SculkCatalystBlock;
+import net.minecraft.world.level.block.SculkSensorBlock;
+import net.minecraft.world.level.block.SculkShriekerBlock;
+import net.minecraft.world.level.block.SmithingTableBlock;
+import net.minecraft.world.level.block.StonecutterBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.piston.MovingPistonBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 
 public final class InteractionStateHandler {
     private static int holdTicks;
@@ -37,32 +80,32 @@ public final class InteractionStateHandler {
 
     private InteractionStateHandler() {}
 
-    public static void onPhysicalKeyReleased(InputUtil.Key key) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client != null && client.options != null && key.equals(KeyBindingHelper.getBoundKeyOf(client.options.useKey))) {
+    public static void onPhysicalKeyReleased(InputConstants.Key key) {
+        Minecraft client = Minecraft.getInstance();
+        if (client != null && client.options != null && key.equals(KeyMappingHelper.getBoundKeyOf(client.options.keyUse))) {
             holdTicks = 0;
             startedOnBlockPlace = false;
         }
     }
 
-    public static void tick(MinecraftClient client) {
-        if (client.options.useKey.isPressed()) holdTicks++;
+    public static void tick(Minecraft client) {
+        if (client.options.keyUse.isDown()) holdTicks++;
         else {
             holdTicks = 0;
             startedOnBlockPlace = false;
         }
     }
 
-    public static boolean shouldCancelInteractBlock(ClientPlayerEntity player, Hand hand, BlockHitResult hit) {
+    public static boolean shouldCancelInteractBlock(LocalPlayer player, InteractionHand hand, BlockHitResult hit) {
         pendingPlacementCheck = false;
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         ModConfig config = ModConfig.get();
-        if (!config.enabled || client.world == null) return false;
-        BlockState state = client.world.getBlockState(hit.getBlockPos());
-        ItemStack stack = player.getStackInHand(hand);
+        if (!config.enabled || client.level == null) return false;
+        BlockState state = client.level.getBlockState(hit.getBlockPos());
+        ItemStack stack = player.getItemInHand(hand);
         boolean interactive = isInteractiveBlock(state);
-        boolean sneaking = player.isSneaking();
-        long now = Util.getMeasuringTimeMs();
+        boolean sneaking = player.isShiftKeyDown();
+        long now = Util.getMillis();
         if (config.buildGuardEnabled && interactive && !sneaking
                 && (holdTicks > config.holdThresholdTicks || startedOnBlockPlace)
                 && !AutoHoldHandler.isUseTarget(hit.getBlockPos())) {
@@ -79,20 +122,20 @@ public final class InteractionStateHandler {
     }
 
     public static boolean isEntityGuarded(Entity entity) {
-        return entity instanceof ItemFrameEntity || entity instanceof ArmorStandEntity || entity instanceof MerchantEntity
-                || entity instanceof AbstractMinecartEntity || entity instanceof AbstractBoatEntity;
+        return entity instanceof ItemFrame || entity instanceof ArmorStand || entity instanceof AbstractVillager
+                || entity instanceof AbstractMinecart || entity instanceof AbstractBoat;
     }
 
-    public static boolean shouldCancelInteractEntity(PlayerEntity player, Entity entity, Hand hand) {
+    public static boolean shouldCancelInteractEntity(Player player, Entity entity, InteractionHand hand) {
         ModConfig config = ModConfig.get();
         if (!config.enabled) return false;
-        long now = Util.getMeasuringTimeMs();
-        if (config.buildGuardEnabled && config.entityGuardEnabled && isEntityGuarded(entity) && !player.isSneaking()
+        long now = Util.getMillis();
+        if (config.buildGuardEnabled && config.entityGuardEnabled && isEntityGuarded(entity) && !player.isShiftKeyDown()
                 && (holdTicks > config.holdThresholdTicks || startedOnBlockPlace) && !AutoHoldHandler.isUseTarget(entity)) {
             guardFeedback(now);
             return true;
         }
-        ItemStack stack = player.getStackInHand(hand);
+        ItemStack stack = player.getItemInHand(hand);
         if (config.durabilityGuardEnabled && config.durabilityGuardManualTools && isGuardedTool(stack)
                 && AutoHoldHandler.isLowDurability(stack, config.durabilityThreshold)) {
             protectTool(stack, now);
@@ -101,13 +144,13 @@ public final class InteractionStateHandler {
         return false;
     }
 
-    public static boolean shouldCancelAttack(PlayerEntity player) {
+    public static boolean shouldCancelAttack(Player player) {
         if (player == null) return false;
         ModConfig config = ModConfig.get();
-        ItemStack stack = player.getMainHandStack();
+        ItemStack stack = player.getMainHandItem();
         if (config.enabled && config.durabilityGuardEnabled && config.durabilityGuardMining && isMiningGuarded(stack)
                 && AutoHoldHandler.isLowDurability(stack, config.durabilityThreshold)) {
-            protectTool(stack, Util.getMeasuringTimeMs());
+            protectTool(stack, Util.getMillis());
             return true;
         }
         return false;
@@ -117,7 +160,7 @@ public final class InteractionStateHandler {
         lastGuardBlockMs = now;
         if (lastGuardSoundMs == 0 || now - lastGuardSoundMs >= 600) {
             lastGuardSoundMs = now;
-            Feedback.sound(SoundEvents.BLOCK_NOTE_BLOCK_HAT, 1.5f);
+            Feedback.sound(SoundEvents.NOTE_BLOCK_HAT, 1.5f);
         }
     }
 
@@ -125,65 +168,65 @@ public final class InteractionStateHandler {
         lastGuardBlockMs = now;
         if (lastDurabilityFeedbackMs == 0 || now - lastDurabilityFeedbackMs >= 1000) {
             lastDurabilityFeedbackMs = now;
-            Feedback.actionBar(Text.translatable("message.safeinteract.tool_protected", stack.getMaxDamage() - stack.getDamage()));
-            Feedback.sound(SoundEvents.BLOCK_NOTE_BLOCK_HAT, 0.8f);
+            Feedback.actionBar(Component.translatable("message.safeinteract.tool_protected", stack.getMaxDamage() - stack.getDamageValue()));
+            Feedback.sound(SoundEvents.NOTE_BLOCK_HAT, 0.8f);
         }
     }
 
-    public static void afterInteractBlock(ActionResult result) {
-        if (pendingPlacementCheck && result instanceof ActionResult.Success) startedOnBlockPlace = true;
+    public static void afterInteractBlock(InteractionResult result) {
+        if (pendingPlacementCheck && result instanceof InteractionResult.Success) startedOnBlockPlace = true;
         pendingPlacementCheck = false;
     }
 
     private static boolean isGuardedTool(ItemStack stack) {
         Item item = stack.getItem();
-        return item instanceof AxeItem || item instanceof HoeItem || item instanceof ShovelItem
+        return stack.has(DataComponents.BLOCK_TRANSFORMER)
                 || item instanceof FlintAndSteelItem || item instanceof ShearsItem || item instanceof BrushItem;
     }
 
     private static boolean isMiningGuarded(ItemStack stack) {
         Item item = stack.getItem();
-        return stack.contains(DataComponentTypes.TOOL) || stack.contains(DataComponentTypes.WEAPON)
+        return stack.has(DataComponents.TOOL) || stack.has(DataComponents.WEAPON)
                 || item instanceof MaceItem || item instanceof TridentItem;
     }
 
     public static boolean isInteractiveBlock(BlockState state) {
         ModConfig config = ModConfig.get();
-        Identifier id = Registries.BLOCK.getId(state.getBlock());
+        Identifier id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
         if (config.isIgnored(id)) return false;
         if (config.isGuarded(id)) return true;
         Block block = state.getBlock();
-        if (block instanceof BlockWithEntity && !(block instanceof AbstractSkullBlock)
+        if (block instanceof BaseEntityBlock && !(block instanceof AbstractSkullBlock)
                 && !(block instanceof AbstractBannerBlock) && !(block instanceof SculkSensorBlock)
                 && !(block instanceof SculkShriekerBlock) && !(block instanceof SculkCatalystBlock)
-                && !(block instanceof ConduitBlock) && !(block instanceof PistonExtensionBlock)
+                && !(block instanceof ConduitBlock) && !(block instanceof MovingPistonBlock)
                 && !(block instanceof BrushableBlock) && !(block instanceof CreakingHeartBlock)
                 && !(block instanceof EndPortalBlock) && !(block instanceof EndGatewayBlock)) return true;
-        return block instanceof DoorBlock || block instanceof TrapdoorBlock || block instanceof FenceGateBlock
-                || block instanceof ButtonBlock || block instanceof LeverBlock || block instanceof AbstractRedstoneGateBlock
+        return block instanceof DoorBlock || block instanceof TrapDoorBlock || block instanceof FenceGateBlock
+                || block instanceof ButtonBlock || block instanceof LeverBlock || block instanceof DiodeBlock
                 || block instanceof NoteBlock || block instanceof BedBlock
                 || block instanceof CraftingTableBlock
                 || block instanceof AnvilBlock || block instanceof GrindstoneBlock || block instanceof StonecutterBlock
                 || block instanceof LoomBlock || block instanceof CartographyTableBlock || block instanceof SmithingTableBlock
                 || block instanceof EnchantingTableBlock || block instanceof BeaconBlock || block instanceof BellBlock
                 || block instanceof ComposterBlock || block instanceof LecternBlock || block instanceof RespawnAnchorBlock
-                || block instanceof ChiseledBookshelfBlock || block instanceof DecoratedPotBlock;
+                || block instanceof ChiseledBookShelfBlock || block instanceof DecoratedPotBlock;
     }
 
     public static boolean isPierceActive() {
         ModConfig config = ModConfig.get();
         return config.enabled && config.entityPierceEnabled && SafeInteractClient.PIERCE_KEY != null
-                && SafeInteractClient.PIERCE_KEY.isPressed() && !ServerPolicy.isPierceBlocked();
+                && SafeInteractClient.PIERCE_KEY.isDown() && !ServerPolicy.isPierceBlocked();
     }
 
     public static boolean isPierceable(Entity entity) {
         ModConfig c = ModConfig.get();
-        return entity instanceof ItemFrameEntity && c.pierceItemFrames
-                || entity instanceof ArmorStandEntity && c.pierceArmorStands
-                || entity instanceof MerchantEntity && c.pierceVillagers
-                || entity instanceof AbstractMinecartEntity && c.pierceMinecarts
-                || entity instanceof AbstractBoatEntity && c.pierceBoats
-                || entity instanceof PaintingEntity && c.piercePaintings;
+        return entity instanceof ItemFrame && c.pierceItemFrames
+                || entity instanceof ArmorStand && c.pierceArmorStands
+                || entity instanceof AbstractVillager && c.pierceVillagers
+                || entity instanceof AbstractMinecart && c.pierceMinecarts
+                || entity instanceof AbstractBoat && c.pierceBoats
+                || entity instanceof Painting && c.piercePaintings;
     }
 
     public static void reset() {

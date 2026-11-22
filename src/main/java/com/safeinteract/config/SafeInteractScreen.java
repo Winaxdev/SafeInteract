@@ -1,27 +1,26 @@
 package com.safeinteract.config;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.option.GameOptionsScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.SimpleOption;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.OptionInstance;
+import net.minecraft.client.Options;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.layouts.LinearLayout;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.options.OptionsSubScreen;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 import java.util.function.Consumer;
 
-public class SafeInteractScreen extends GameOptionsScreen {
+public class SafeInteractScreen extends OptionsSubScreen {
     public SafeInteractScreen(Screen parent) {
-        super(parent, MinecraftClient.getInstance().options, Text.translatable("config.safeinteract.title"));
+        super(parent, Minecraft.getInstance().options, Component.translatable("config.safeinteract.title"));
     }
 
     @Override
     protected void addOptions() {
         ModConfig c = ModConfig.get();
-        body.addAll(
+        list.addSmall(
                 bool("enabled", c.enabled, v -> c.enabled = v),
                 bool("actionBarEnabled", c.actionBarEnabled, v -> c.actionBarEnabled = v),
                 bool("buildGuardEnabled", c.buildGuardEnabled, v -> c.buildGuardEnabled = v),
@@ -43,16 +42,16 @@ public class SafeInteractScreen extends GameOptionsScreen {
         );
     }
 
-    private static SimpleOption<Boolean> bool(String name, boolean value, Consumer<Boolean> save) {
+    private static OptionInstance<Boolean> bool(String name, boolean value, Consumer<Boolean> save) {
         String key = "config.safeinteract.option." + name;
-        return SimpleOption.ofBoolean(key, SimpleOption.constantTooltip(Text.translatable(key + ".tooltip")), value, save);
+        return OptionInstance.createBoolean(key, OptionInstance.cachedConstantTooltip(Component.translatable(key + ".tooltip")), value, save::accept);
     }
 
-    private static SimpleOption<Integer> integer(String name, int value, int min, int max, String suffix, Consumer<Integer> save) {
+    private static OptionInstance<Integer> integer(String name, int value, int min, int max, String suffix, Consumer<Integer> save) {
         String key = "config.safeinteract.option." + name;
-        return new SimpleOption<>(key, SimpleOption.constantTooltip(Text.translatable(key + ".tooltip")),
-                (text, v) -> GameOptions.getGenericValueText(text, Text.literal(v + suffix)),
-                new SimpleOption.ValidatingIntSliderCallbacks(min, max), value, save);
+        return new OptionInstance<>(key, OptionInstance.cachedConstantTooltip(Component.translatable(key + ".tooltip")),
+                (text, v) -> Options.genericValueLabel(text, Component.literal(v + suffix)),
+                new OptionInstance.IntRange(min, max), value, save::accept);
     }
 
     @Override
@@ -62,14 +61,14 @@ public class SafeInteractScreen extends GameOptionsScreen {
     }
 
     @Override
-    protected void initFooter() {
+    protected void addFooter() {
         if (!FabricLoader.getInstance().isModLoaded("cloth-config")) {
-            super.initFooter();
+            super.addFooter();
             return;
         }
-        DirectionalLayoutWidget row = layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(8));
-        row.add(ButtonWidget.builder(Text.translatable("config.safeinteract.advanced"),
-                b -> client.setScreen(ClothConfigScreen.create(this))).width(150).build());
-        row.add(ButtonWidget.builder(ScreenTexts.DONE, b -> close()).width(150).build());
+        LinearLayout row = layout.addToFooter(LinearLayout.horizontal().spacing(8));
+        row.addChild(Button.builder(Component.translatable("config.safeinteract.advanced"),
+                b -> minecraft.gui.setScreen(ClothConfigScreen.create(this))).width(150).build());
+        row.addChild(Button.builder(CommonComponents.GUI_DONE, b -> onClose()).width(150).build());
     }
 }

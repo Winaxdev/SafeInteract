@@ -3,9 +3,8 @@ package com.safeinteract.config;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
-
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -16,7 +15,7 @@ public final class ClothConfigScreen {
         ModConfig c = ModConfig.get();
         ModConfig defaults = new ModConfig();
         ConfigBuilder builder = ConfigBuilder.create().setParentScreen(parent)
-                .setTitle(Text.translatable("config.safeinteract.title")).setSavingRunnable(ModConfig::save);
+                .setTitle(Component.translatable("config.safeinteract.title")).setSavingRunnable(ModConfig::save);
         ConfigEntryBuilder entries = builder.entryBuilder();
         ConfigCategory general = category(builder, "general");
         bool(general, entries, "enabled", c.enabled, defaults.enabled, v -> c.enabled = v);
@@ -70,11 +69,11 @@ public final class ClothConfigScreen {
     }
 
     private static ConfigCategory category(ConfigBuilder builder, String name) {
-        return builder.getOrCreateCategory(Text.translatable("config.safeinteract.category." + name));
+        return builder.getOrCreateCategory(Component.translatable("config.safeinteract.category." + name));
     }
 
-    private static Text label(String name) { return Text.translatable("config.safeinteract.option." + name); }
-    private static Text tooltip(String name) { return Text.translatable("config.safeinteract.option." + name + ".tooltip"); }
+    private static Component label(String name) { return Component.translatable("config.safeinteract.option." + name); }
+    private static Component tooltip(String name) { return Component.translatable("config.safeinteract.option." + name + ".tooltip"); }
 
     private static void bool(ConfigCategory category, ConfigEntryBuilder entries, String name, boolean value,
                              boolean defaultValue, Consumer<Boolean> save) {

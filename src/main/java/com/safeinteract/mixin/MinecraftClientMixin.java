@@ -1,16 +1,16 @@
 package com.safeinteract.mixin;
 
 import com.safeinteract.SafeInteractClient;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(MinecraftClient.class)
+@Mixin(Minecraft.class)
 public abstract class MinecraftClientMixin {
-    @Inject(method = "handleInputEvents", at = @At("HEAD"))
+    @Inject(method = "handleKeybinds", at = @At("HEAD"))
     private void safeinteract$preInput(CallbackInfo ci) {
-        SafeInteractClient.onPreInput((MinecraftClient) (Object) this);
+        SafeInteractClient.onPreInput((Minecraft) (Object) this);
     }
 }

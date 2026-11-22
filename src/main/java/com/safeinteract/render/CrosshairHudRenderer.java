@@ -3,20 +3,20 @@ package com.safeinteract.render;
 import com.safeinteract.config.ModConfig;
 import com.safeinteract.handler.AutoHoldHandler;
 import com.safeinteract.handler.InteractionStateHandler;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.Util;
 
 public final class CrosshairHudRenderer {
     private CrosshairHudRenderer() {}
 
-    public static void render(DrawContext context, RenderTickCounter tickCounter) {
+    public static void render(GuiGraphicsExtractor context, DeltaTracker tickCounter) {
         ModConfig c = ModConfig.get();
-        if (!c.enabled || !c.hudEnabled || MinecraftClient.getInstance().player == null) return;
-        int x = context.getScaledWindowWidth() / 2 + c.hudOffsetX;
-        int y = context.getScaledWindowHeight() / 2 + c.hudOffsetY;
-        long now = Util.getMeasuringTimeMs();
+        if (!c.enabled || !c.hudEnabled || Minecraft.getInstance().player == null) return;
+        int x = context.guiWidth() / 2 + c.hudOffsetX;
+        int y = context.guiHeight() / 2 + c.hudOffsetY;
+        long now = Util.getMillis();
         float opacity = c.hudOpacity / 100f;
         boolean shieldDrawn = false;
         if (c.hudShowPierce && InteractionStateHandler.isPierceActive()) {
@@ -46,7 +46,7 @@ public final class CrosshairHudRenderer {
         }
     }
 
-    private static void shield(DrawContext context, int x, int y, int body, int highlight, float alpha) {
+    private static void shield(GuiGraphicsExtractor context, int x, int y, int body, int highlight, float alpha) {
         if (alpha < 0.02f) return;
         for (int row = 0; row <= 10; row++) {
             int start = row == 0 || row == 7 ? 1 : row == 8 ? 2 : row == 9 ? 3 : row == 10 ? 4 : 0;
@@ -61,7 +61,7 @@ public final class CrosshairHudRenderer {
         rect(context, x + 4, y + 5, x + 5, y + 7, 0, alpha * 0.7f);
     }
 
-    private static void ring(DrawContext context, int x, int y, int color, float ringAlpha, float dotAlpha) {
+    private static void ring(GuiGraphicsExtractor context, int x, int y, int color, float ringAlpha, float dotAlpha) {
         rect(context, x + 1, y, x + 6, y + 1, color, ringAlpha);
         rect(context, x + 1, y + 6, x + 6, y + 7, color, ringAlpha);
         rect(context, x, y + 1, x + 1, y + 6, color, ringAlpha);
@@ -69,7 +69,7 @@ public final class CrosshairHudRenderer {
         rect(context, x + 2, y + 2, x + 5, y + 5, color, dotAlpha);
     }
 
-    private static void rect(DrawContext context, int x1, int y1, int x2, int y2, int rgb, float alpha) {
+    private static void rect(GuiGraphicsExtractor context, int x1, int y1, int x2, int y2, int rgb, float alpha) {
         if (alpha < 0.02f) return;
         int a = Math.min(255, Math.round(alpha * 255));
         context.fill(x1, y1, x2, y2, (a << 24) | rgb);
