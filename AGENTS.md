@@ -2,5 +2,5 @@
 
 - Build: `./gradlew build`
 - Development client: `./gradlew runClient`
-- Minecraft 1.21.4, Yarn 1.21.4+build.8, Fabric Loader 0.16.9, Fabric API 0.119.4+1.21.4.
+- Minecraft 1.21.11, Yarn 1.21.11+build.6, Fabric Loader 0.20.1, Fabric API 0.141.6+1.21.11.
 - Use JDK 21.

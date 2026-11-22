@@ -37,7 +37,7 @@ public final class Feedback {
         ModConfig config = ModConfig.get();
         if (config.soundsEnabled && config.soundVolume > 0) {
             MinecraftClient.getInstance().getSoundManager().play(
-                    PositionedSoundInstance.master(sound.value(), pitch, config.soundVolume / 100f));
+                    PositionedSoundInstance.ui(sound.value(), pitch, config.soundVolume / 100f));
         }
     }
 

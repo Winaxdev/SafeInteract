@@ -55,8 +55,8 @@ Restrictions last until disconnect. Build Guard and durability protection cannot
 
 ## Requirements
 
-- Minecraft 1.21.4
-- Fabric Loader 0.16.9 or newer
+- Minecraft 1.21.11
+- Fabric Loader 0.18.1 or newer
 - Fabric API
 - Optional: Mod Menu and Cloth Config
 
@@ -131,8 +131,8 @@ SafeInteract помогает избежать случайных взаимод
 
 ### Требования
 
-- Minecraft 1.21.4
-- Fabric Loader 0.16.9 или новее
+- Minecraft 1.21.11
+- Fabric Loader 0.18.1 или новее
 - Fabric API
 - Необязательно: Mod Menu и Cloth Config
 

@@ -18,6 +18,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 public class SafeInteractClient implements ClientModInitializer {
     public static final String MOD_ID = "safeinteract";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    private static final KeyBinding.Category KEY_CATEGORY = KeyBinding.Category.create(Identifier.of(MOD_ID, "general"));
     public static KeyBinding PIERCE_KEY;
     public static KeyBinding HOLD_USE_KEY;
     public static KeyBinding HOLD_ATTACK_KEY;
@@ -61,7 +63,7 @@ public class SafeInteractClient implements ClientModInitializer {
 
     private static KeyBinding register(String name, int key) {
         return KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.safeinteract." + name, InputUtil.Type.KEYSYM, key, "category.safeinteract"));
+                "key.safeinteract." + name, InputUtil.Type.KEYSYM, key, KEY_CATEGORY));
     }
 
     private static void reset() {

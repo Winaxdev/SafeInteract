@@ -1,5 +1,5 @@
 {
-  "category.safeinteract": "SafeInteract",
+  "key.category.safeinteract.general": "SafeInteract",
   "key.safeinteract.pierce": "Entity Pierce",
   "key.safeinteract.hold_use": "Toggle Smart Hold RMB",
   "key.safeinteract.hold_attack": "Toggle Smart Hold LMB",

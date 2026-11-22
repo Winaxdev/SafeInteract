@@ -143,7 +143,7 @@ public final class InteractionStateHandler {
 
     private static boolean isMiningGuarded(ItemStack stack) {
         Item item = stack.getItem();
-        return stack.contains(DataComponentTypes.TOOL) || item instanceof SwordItem
+        return stack.contains(DataComponentTypes.TOOL) || stack.contains(DataComponentTypes.WEAPON)
                 || item instanceof MaceItem || item instanceof TridentItem;
     }
 
@@ -162,7 +162,7 @@ public final class InteractionStateHandler {
         return block instanceof DoorBlock || block instanceof TrapdoorBlock || block instanceof FenceGateBlock
                 || block instanceof ButtonBlock || block instanceof LeverBlock || block instanceof AbstractRedstoneGateBlock
                 || block instanceof NoteBlock || block instanceof BedBlock
-                || (block instanceof CraftingTableBlock && !(block instanceof FletchingTableBlock))
+                || block instanceof CraftingTableBlock
                 || block instanceof AnvilBlock || block instanceof GrindstoneBlock || block instanceof StonecutterBlock
                 || block instanceof LoomBlock || block instanceof CartographyTableBlock || block instanceof SmithingTableBlock
                 || block instanceof EnchantingTableBlock || block instanceof BeaconBlock || block instanceof BellBlock

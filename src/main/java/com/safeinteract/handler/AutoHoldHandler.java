@@ -57,9 +57,9 @@ public final class AutoHoldHandler {
         mode = requested;
         player = client.player;
         world = client.world;
-        selectedSlot = player.getInventory().selectedSlot;
+        selectedSlot = player.getInventory().getSelectedSlot();
         item = player.getMainHandStack().getItem();
-        startPos = player.getPos();
+        startPos = player.getEntityPos();
         lastHealth = player.getHealth();
         targetPos = client.crosshairTarget instanceof BlockHitResult hit && hit.getType() == HitResult.Type.BLOCK
                 ? hit.getBlockPos().toImmutable() : null;
@@ -100,12 +100,12 @@ public final class AutoHoldHandler {
             abort(client, Text.translatable("reason.safeinteract.inventory_full"));
         } else if (config.holdDamageGuard && (current.hurtTime > 0 || current.getHealth() < lastHealth)) {
             abort(client, Text.translatable("reason.safeinteract.damage"));
-        } else if (config.holdSlotGuard && current.getInventory().selectedSlot != selectedSlot) {
+        } else if (config.holdSlotGuard && current.getInventory().getSelectedSlot() != selectedSlot) {
             abort(client, Text.translatable("reason.safeinteract.slot"));
         } else if (config.holdSlotGuard && current.getMainHandStack().getItem() != item) {
             abort(client, Text.translatable("reason.safeinteract.item"));
         } else if (config.holdMovementGuard
-                && current.getPos().squaredDistanceTo(startPos) > config.holdMovementTolerance * config.holdMovementTolerance) {
+                && current.getEntityPos().squaredDistanceTo(startPos) > config.holdMovementTolerance * config.holdMovementTolerance) {
             abort(client, Text.translatable("reason.safeinteract.moved"));
         } else {
             if (config.holdTargetLostGuard && targetPos != null) {
@@ -164,7 +164,7 @@ public final class AutoHoldHandler {
 
     private static boolean physicalState(MinecraftClient client, KeyBinding binding) {
         InputUtil.Key key = KeyBindingHelper.getBoundKeyOf(binding);
-        if (key.getCategory() == InputUtil.Type.KEYSYM) return InputUtil.isKeyPressed(client.getWindow().getHandle(), key.getCode());
+        if (key.getCategory() == InputUtil.Type.KEYSYM) return InputUtil.isKeyPressed(client.getWindow(), key.getCode());
         if (key.getCategory() == InputUtil.Type.MOUSE) return GLFW.glfwGetMouseButton(client.getWindow().getHandle(), key.getCode()) == GLFW.GLFW_PRESS;
         return false;
     }
