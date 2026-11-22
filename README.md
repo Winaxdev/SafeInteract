@@ -16,6 +16,7 @@ It is a client-side Fabric mod; the server does not need to install it.
   - you move farther than the configured tolerance from the starting position;
   - the initially targeted block remains air longer than the configured delay;
   - you die or the player or world changes;
+  - the server disables Smart Hold;
   - a screen other than ordinary chat opens. Chat pauses holding until it closes.
 
   Disconnecting or disabling the mod also stops holding.
@@ -44,7 +45,13 @@ Use `/safeinteract reload` to reload `config/safeinteract.json`. The full settin
 
 Everything runs on the client. Blocked interactions, digging, and attacks are not sent to the server; vanilla swing behavior can still occur. SafeInteract sends no extra packets, does not extend reach, and does not change rotation. Its client commands are not sent to the server.
 
-Smart Hold automates holding a mouse button. Check the server's rules on AFK play and automation before using it.
+Servers can opt out of Smart Hold and Entity-Pierce as described below. Smart Hold automates holding a mouse button. Check the server's rules on AFK play and automation before using it.
+
+## For server owners
+
+Put `§s§i§q§h` to disable Smart Hold and/or `§s§i§q§p` to disable Entity-Pierce anywhere in the server MOTD, or send the codes in a system message (for example, with `tellraw` or a plugin when a player joins). The codes are invisible; a system message consisting only of these codes is hidden from SafeInteract users.
+
+Restrictions last until disconnect. Build Guard and durability protection cannot be disabled by a server because they only restrict the player. The MOTD is only known when joining from the server list, so a join message is the more reliable method.
 
 ## Requirements
 
@@ -85,6 +92,7 @@ SafeInteract помогает избежать случайных взаимод
   - игрок отходит от начальной позиции дальше допустимого расстояния;
   - на месте первоначально выбранного блока воздух остаётся дольше заданной задержки;
   - игрок погибает либо меняется игрок или мир;
+  - сервер отключает умное удержание;
   - открывается любой экран, кроме обычного чата. Пока чат открыт, удержание приостанавливается.
 
   При отключении от сервера или выключении мода удержание также прекращается.
@@ -113,7 +121,13 @@ SafeInteract помогает избежать случайных взаимод
 
 Все действия мода выполняются на клиенте. Заблокированные взаимодействия, добыча и атаки не отправляются на сервер; стандартный взмах при этом всё ещё возможен. SafeInteract не отправляет дополнительные пакеты, не увеличивает дальность и не меняет поворот игрока. Клиентские команды не отправляются на сервер.
 
-Умное удержание автоматизирует удержание кнопки мыши. Перед использованием ознакомьтесь с правилами сервера об AFK и автоматизации.
+Серверы могут отключить умное удержание и взаимодействие сквозь сущности, как описано ниже. Умное удержание автоматизирует удержание кнопки мыши. Перед использованием ознакомьтесь с правилами сервера об AFK и автоматизации.
+
+### Для владельцев серверов
+
+Добавьте `§s§i§q§h` для отключения умного удержания и/или `§s§i§q§p` для отключения взаимодействия сквозь сущности в любое место MOTD сервера либо отправьте эти коды в системном сообщении (например, с помощью `tellraw` или плагина при входе игрока). Коды невидимы; системное сообщение, состоящее только из этих кодов, скрывается от пользователей SafeInteract.
+
+Ограничения действуют до отключения от сервера. Сервер не может отключить защиту строительства и защиту прочности, поскольку они только ограничивают действия игрока. MOTD доступен только при входе через список серверов, поэтому сообщение при входе надёжнее.
 
 ### Требования
 

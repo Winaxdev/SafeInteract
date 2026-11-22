@@ -48,6 +48,11 @@ public final class AutoHoldHandler {
             announce(requested, false);
             return;
         }
+        if (ServerPolicy.isHoldBlocked()) {
+            Feedback.actionBar(Text.translatable("message.safeinteract.server_disabled", Text.translatable("feature.safeinteract.smart_hold")));
+            Feedback.sound(SoundEvents.BLOCK_NOTE_BLOCK_HAT, 0.8f);
+            return;
+        }
         stop(client);
         mode = requested;
         player = client.player;
@@ -74,6 +79,10 @@ public final class AutoHoldHandler {
         ModConfig config = ModConfig.get();
         if (!config.enabled || client.player == null || client.world == null) {
             stop(client);
+            return;
+        }
+        if (ServerPolicy.isHoldBlocked()) {
+            abort(client, Text.translatable("reason.safeinteract.server"));
             return;
         }
         ClientPlayerEntity current = client.player;
@@ -116,6 +125,10 @@ public final class AutoHoldHandler {
             abort(client, client.player != null && !client.player.isAlive()
                     ? Text.translatable("reason.safeinteract.died") : Text.translatable("reason.safeinteract.screen"));
         }
+    }
+
+    public static void stopByServer(MinecraftClient client) {
+        if (mode != Mode.NONE) abort(client, Text.translatable("reason.safeinteract.server"));
     }
 
     private static void abortDurability(MinecraftClient client, ItemStack stack) {

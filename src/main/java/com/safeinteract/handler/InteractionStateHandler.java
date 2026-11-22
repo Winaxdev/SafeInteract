@@ -173,7 +173,7 @@ public final class InteractionStateHandler {
     public static boolean isPierceActive() {
         ModConfig config = ModConfig.get();
         return config.enabled && config.entityPierceEnabled && SafeInteractClient.PIERCE_KEY != null
-                && SafeInteractClient.PIERCE_KEY.isPressed();
+                && SafeInteractClient.PIERCE_KEY.isPressed() && !ServerPolicy.isPierceBlocked();
     }
 
     public static boolean isPierceable(Entity entity) {
