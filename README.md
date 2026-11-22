@@ -60,6 +60,8 @@ Restrictions last until disconnect. Build Guard and durability protection cannot
 - Fabric API
 - Optional: Mod Menu and Cloth Config
 
+Builds for Minecraft 1.21.11 and 26.3 are maintained on the [`1.21.11`](https://github.com/Winaxdev/SafeInteract/tree/1.21.11) and [`26.3`](https://github.com/Winaxdev/SafeInteract/tree/26.3) branches. Download the jar for your game version from [Releases](https://github.com/Winaxdev/SafeInteract/releases).
+
 ## Building
 
 Use JDK 21 and run:
@@ -135,6 +137,8 @@ SafeInteract помогает избежать случайных взаимод
 - Fabric Loader 0.16.9 или новее
 - Fabric API
 - Необязательно: Mod Menu и Cloth Config
+
+Сборки для Minecraft 1.21.11 и 26.3 находятся в ветках [`1.21.11`](https://github.com/Winaxdev/SafeInteract/tree/1.21.11) и [`26.3`](https://github.com/Winaxdev/SafeInteract/tree/26.3). Скачайте jar для своей версии игры в разделе [Releases](https://github.com/Winaxdev/SafeInteract/releases).
 
 ### Сборка
 
