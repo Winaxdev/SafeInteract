@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.safeinteract.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "ClientPlayerInteractionManagerMixin",
+    "GameRendererMixin",
+    "MinecraftClientMixin",
+    "InGameHudMixin",
+    "KeyBindingMixin"
+  ],
+  "injectors": {"defaultRequire": 1}
+}

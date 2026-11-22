@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "safeinteract",
+  "version": "${version}",
+  "name": "SafeInteract",
+  "description": "Client-side safeguards for building, tools, and interactions.",
+  "authors": ["winax1337"],
+  "license": "MIT",
+  "contact": {
+    "homepage": "https://github.com/Winaxdev/SafeInteract",
+    "sources": "https://github.com/Winaxdev/SafeInteract",
+    "issues": "https://github.com/Winaxdev/SafeInteract/issues"
+  },
+  "icon": "assets/safeinteract/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["com.safeinteract.SafeInteractClient"],
+    "modmenu": ["com.safeinteract.config.ModMenuIntegration"]
+  },
+  "mixins": [{"config": "safeinteract.mixins.json", "environment": "client"}],
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": "1.21.4",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "modmenu": "*",
+    "cloth-config": "*"
+  }
+}
